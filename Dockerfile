@@ -1,10 +1,17 @@
-# ruby:2.1 was used in example, version probably doesn't matter.
-FROM ruby:2.1-onbuild
+# don't use alpine version here, `bundle install` fails.
+FROM ruby:2.5
 
-EXPOSE 4567
+# throw errors if Gemfile has been modified since Gemfile.lock
+RUN bundle config --global frozen 1
 
+WORKDIR /usr/src/app
 RUN mkdir -p /tmp
 
-VOLUME /var/www/kaplon.us
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+COPY . .
+
+EXPOSE 4567
 
 CMD ["./hook.rb"]

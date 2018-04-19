@@ -1,5 +1,4 @@
 require 'sinatra'
-require 'thin'
 require 'json'
 
 git_user = "jkaplon"
