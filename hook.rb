@@ -8,11 +8,11 @@ output = ""
 
 puts "Process ID: #{Process.pid}"
 
-get '/8c18e7e321e683854951a696318a55a4' do
+get '/' do
     'OK'
 end
 
-post '/8c18e7e321e683854951a696318a55a4/alytfeed' do
+post '/alytfeed' do
     payload = JSON.parse(params[:payload])
     site_name = payload["repository"]["name"]
 
