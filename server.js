@@ -22,19 +22,25 @@ app.post('/alytfeed', function(req, res) {
     winston.info('Potential post from GitHub webhook.');
     res.status(200).send('OK');  // Go ahead and return an OK to GitHub.
 
-    // TODO: `rm -rf` the /tmp dir (may need to edit Dockerfile to add dir
-    // clone from github to get latest version of alytfeed.xml
-    // copy latest alytfeed.xml to /var/www/kaplon.us/alytfeed.xml;
-
-    var crypto = require('crypto')
-        ,text = JSON.stringify(req.body)
-        ,key  = process.env.WEBHOOK_SECRET
-        ,hash;
-
-    hash = crypto.createHmac('sha1', key).update(text).digest('hex');
+    var crypto = require('crypto');
+    var text = JSON.stringify(req.body);
+    var key = process.env.WEBHOOK_SECRET;
+    var hash = crypto.createHmac('sha1', key).update(text).digest('hex');
     // Header key value all lower-case here, even though it's mixed-case in GitHub docs.
     winston.info('GitHub HMAC: ' + req.headers['x-hub-signature']);
     winston.info('Calculated:  sha1=' + hash);
+
+    var exec = require('child_process').exec;
+    var cmd = 'rm -rf /tmp/webhooks/alytfeed; git clone https://github.com/jkaplon/alytfeed.git'
+    exec(cmd, function(error, stdout, stderr) {
+        if (error) { winston.error(error); }
+        winston.info('Latest repo changes cloned from github.com');
+        var cmd2 = 'cp /tmp/webhooks/alytfeed/alytfeed.xml /var/www/kaplon.us/alytfeed.xml'
+        //exec(cmd2, function(error, stdout, stderr) {
+            //if (error) { winston.error(error); }
+            //winston.info('Latest alytfeed.xml copied to canonical location.');
+        //}
+    }
 });
 
 app.listen(4567, function() {
