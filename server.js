@@ -1,8 +1,7 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-app.use(bodyParser.text());   // Use defaults for now, size limit is 100kb.
-app.use(bodyParser.urlencoded({ extended: true }));   // Also need url encoding to handle login form.
+app.use(bodyParser.json());  // MUST use this, and set GitHub webhook to use application/json Content type.
 var winston = require('winston');
 winston.add(winston.transports.File, { filename: './logs/webhooks.kaplon.us.log', maxsize: 5000000 });  // 5MB
 var fileSystem = require('fs');
@@ -21,16 +20,21 @@ app.get('/alytfeed', function(req, res){
 
 app.post('/alytfeed', function(req, res) {
     winston.info('Potential post from GitHub webhook.');
-    res.status(200).send('OK');
+    res.status(200).send('OK');  // Go ahead and return an OK to GitHub.
 
-    // TODO: verify GitHup HMAC header (figure out how to store secret word in env-var or config file).
-    // then `rm -rf` the /tmp dir (may need to edit Dockerfile to add dir
+    // TODO: `rm -rf` the /tmp dir (may need to edit Dockerfile to add dir
     // clone from github to get latest version of alytfeed.xml
     // copy latest alytfeed.xml to /var/www/kaplon.us/alytfeed.xml;
-    // will def need to edit Dockerfile to make this a mountable volume from host-os.
-    // Try to call as an async function, so can go ahead and return 200/ok to GitHub?
-    // ...Or, make it synchronous so i can return a meaningful error to GitHub???
-    // ?where would i rather look 1st for an error?...logs from this app, or GitHub-webhook-dashboard?
+
+    var crypto = require('crypto')
+        ,text = JSON.stringify(req.body)
+        ,key  = process.env.WEBHOOK_SECRET
+        ,hash;
+
+    hash = crypto.createHmac('sha1', key).update(text).digest('hex');
+    // Header key value all lower-case here, even though it's mixed-case in GitHub docs.
+    winston.info('GitHub HMAC: ' + req.headers['x-hub-signature']);
+    winston.info('Calculated:  sha1=' + hash);
 });
 
 app.listen(4567, function() {

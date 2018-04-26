@@ -1,6 +1,7 @@
 # Go w/node-8 for now, v10 not available quite yet.
 FROM node:8-alpine
 
+ENV WEBHOOK_SECRET {replace_me_at_runtime}
 EXPOSE 4567
 
 RUN mkdir -p /usr/src/app /tmp/webhooks /var/www
