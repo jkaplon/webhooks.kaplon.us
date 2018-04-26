@@ -29,17 +29,25 @@ app.post('/alytfeed', function(req, res) {
     // Header key value all lower-case here, even though it's mixed-case in GitHub docs.
     winston.info('GitHub HMAC: ' + req.headers['x-hub-signature']);
     winston.info('Calculated:  sha1=' + hash);
-
-    var exec = require('child_process').exec;
-    var cmd = 'rm -rf /tmp/webhooks/alytfeed; git clone https://github.com/jkaplon/alytfeed.git'
-    exec(cmd, function(error, stdout, stderr) {
-        if (error) { winston.error(error); }
-        winston.info('Latest repo changes cloned from github.com');
-        var cmd2 = 'cp /tmp/webhooks/alytfeed/alytfeed.xml /var/www/kaplon.us/alytfeed.xml'
-        //exec(cmd2, function(error, stdout, stderr) {
-            //if (error) { winston.error(error); }
-            //winston.info('Latest alytfeed.xml copied to canonical location.');
-        //}
+    if (req.headers['x-hub-signature'] != 'sha1=' + hash) {
+        winston.error('Unable to verify GitHub HMAC header, stranger-danger!');
+    } else {
+        var exec = require('child_process').exec;
+        // Use https address to clone repo and not ssh-URL (eg. NOT git@github.com:jkaplon/alytfeed).
+        // Don't need or want any of the key exchange setup required by the ssh-URL.
+        var cmd = `
+            rm -rf /tmp/webhooks/alytfeed;
+            git clone https://github.com/jkaplon/alytfeed.git /tmp/webhooks/alytfeed;
+        `
+        exec(cmd, function(error, stdout, stderr) {
+            if (error) { winston.error(error); }
+            winston.info('Latest repo changes cloned from github.com');
+            var cmd2 = 'cp /tmp/webhooks/alytfeed/alytfeed.xml /var/www/kaplon.us/alytfeed.xml'
+            exec(cmd2, function(error, stdout, stderr) {
+                if (error) { winston.error(error); }
+                winston.info('Latest alytfeed.xml copied to canonical location.');
+            });
+        });
     }
 });
 
