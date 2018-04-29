@@ -10,7 +10,9 @@ This server then clones a new copy of my podcast feed and upates its canonical l
 The code makes the ~~hacky~~ ~~quick/dirty~~ convenient assumption that it's running with access to the same file-system as the web server hosting the canonical podcast feed location.
 
 Is all of this rather complex?...Yes.
+
 Couldn't I _just_ serve my podcast feed as a GitHub page and call it a day?...Sure.
+
 But then I would miss out on building this fun project!
 Also, I'd rather host my podcast feed from a web-server completely under my control.
 
