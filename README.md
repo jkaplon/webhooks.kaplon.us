@@ -7,7 +7,7 @@ It's part of my complicated (but useful!) podcast feed workflow.
 
 Whenever I push an update to the [At Least You're Trying podcast feed repository](https://github.com/jkaplon/alytfeed), its webhook contacts this server running on my [Linode VPS](https://www.linode.com/?r=30991a143a3c99716fbc7fdcf81355338c4d2b64).
 This server then clones a new copy of my podcast feed and upates its canonical location on the web.
-The code assumes it's running with access to the same file-system as the web server hosting the podcast feed.
+The code makes the ~~hacky~~ ~~quick/dirty~~ convenient assumption that it's running with access to the same file-system as the web server hosting the canonical podcast feed location.
 
 Is all of this rather complex?...Yes.
 Couldn't I _just_ serve my podcast feed as a GitHub page and call it a day?...Sure.
