@@ -17,8 +17,8 @@
   },
   "homepage": "https://github.com/jkaplon/webhooks.kaplon.us#readme",
   "dependencies": {
-    "body-parser": "^1.20.1",
-    "express": "^4.19.2",
+    "body-parser": "^1.20.3",
+    "express": "^4.21.0",
     "winston": "^2.4.2"
   }
 }
